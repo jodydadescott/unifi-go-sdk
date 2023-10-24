@@ -1,0 +1,28 @@
+package main
+
+import (
+	"fmt"
+
+	"github.com/jodydadescott/unifi-go-sdk/unifi"
+)
+
+func main() {
+
+	hostname := "https://10.0.1.1"
+	user := "homeauto"
+	pass := "****"
+
+	unifiClient := unifi.New(&unifi.Config{
+		Hostname: hostname,
+		Username: user,
+		Password: pass,
+	})
+
+	devices, err := unifiClient.GetDevices()
+	if err != nil {
+		fmt.Println(err.Error())
+	} else {
+		fmt.Println(devices)
+	}
+
+}
