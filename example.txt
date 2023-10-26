@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 
 	"github.com/jodydadescott/unifi-go-sdk/unifi"
@@ -19,10 +20,36 @@ func main() {
 	})
 
 	devices, err := unifiClient.GetDevices()
+
 	if err != nil {
-		fmt.Println(err.Error())
-	} else {
-		fmt.Println(devices)
+		panic(err)
 	}
+
+	b, _ := json.Marshal(devices)
+
+	fmt.Println(string(b))
+
+	// for _, networkDevice := range devices.NetworkDevices {
+	// 	//networkDevice.Name
+
+	// 	fmt.Println(networkDevice.Name + " " + networkDevice.IP)
+
+	// 	// for _, port := range networkDevice.PortTable {
+	// 	// 	fmt.Println(networkDevice.Name + " " + port.IP)
+	// 	// }
+
+	// }
+
+	// }
+
+	// enrichedConfigs, err := unifiClient.GetEnrichedConfiguration()
+
+	// if err != nil {
+	// 	panic(err)
+	// }
+
+	// for _, enrichedConfig := range enrichedConfigs {
+	// 	fmt.Println(enrichedConfig.Configuration.Name + " " + enrichedConfig.Configuration.IPSubnet)
+	// }
 
 }
