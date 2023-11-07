@@ -5,7 +5,7 @@ import (
 	"crypto/tls"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 
 	"go.uber.org/zap"
@@ -81,7 +81,7 @@ func (t *Client) GetAuthCookie() (*http.Cookie, error) {
 	}
 
 	defer resp.Body.Close()
-	message, err := ioutil.ReadAll(resp.Body)
+	message, err := io.ReadAll(resp.Body)
 
 	if err != nil {
 		return nil, err
@@ -190,7 +190,7 @@ func (t *Client) httpRequest(op, uri string) ([]byte, error) {
 
 	converToBytes := func(resp *http.Response) ([]byte, error) {
 		defer resp.Body.Close()
-		bytes, err := ioutil.ReadAll(resp.Body)
+		bytes, err := io.ReadAll(resp.Body)
 		if err != nil {
 			return nil, err
 		}
