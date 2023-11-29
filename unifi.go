@@ -59,11 +59,12 @@ func (t *Client) GetAuthCookie() (*http.Cookie, error) {
 	authRequestRaw, _ := json.Marshal(authRequest)
 
 	req, err := http.NewRequest("POST", t.hostname+"/api/auth/login", bytes.NewBuffer(authRequestRaw))
-	req.Header.Set("Content-Type", "application/json")
 
 	if err != nil {
 		return nil, err
 	}
+
+	req.Header.Set("Content-Type", "application/json")
 
 	resp, err := t.httpClient.Do(req)
 
@@ -106,10 +107,7 @@ func (t *Client) GetClients() ([]UnifiClient, error) {
 	}
 
 	var result []UnifiClient
-
-	for _, v := range keys {
-		result = append(result, v)
-	}
+	result = append(result, keys...)
 
 	return result, nil
 }
@@ -148,10 +146,7 @@ func (t *Client) GetEnrichedConfiguration() ([]EnrichedConfiguration, error) {
 	}
 
 	var result []EnrichedConfiguration
-
-	for _, v := range keys {
-		result = append(result, v)
-	}
+	result = append(result, keys...)
 
 	return result, nil
 }
