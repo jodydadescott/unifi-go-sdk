@@ -6,6 +6,14 @@ type Config struct {
 	Hostname string `json:"hostname,omitempty" yaml:"hostname,omitempty"`
 }
 
+func ExampleConfig() *Config {
+	return &Config{
+		Username: "my_unifi_username",
+		Password: "my_unifi_password",
+		Hostname: "https://...",
+	}
+}
+
 type UnifiClient struct {
 	// /proxy/network/v2/api/site/default/clients/active?includeTrafficUsage=true&includeUnifiDevices=true"
 	Anomalies                           float64        `json:"anomalies"`
