@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"time"
 
 	"go.uber.org/zap"
 )
@@ -16,14 +17,14 @@ const (
 )
 
 type Client struct {
-	username    string
-	password    string
-	hostname    string
+	config      *Config
 	httpClient  *http.Client
 	cookieCache *http.Cookie
 }
 
 func New(config *Config) *Client {
+
+	config = config.Clone()
 
 	zap.L().Debug(fmt.Sprintf("Version %s", Version))
 
@@ -39,26 +40,33 @@ func New(config *Config) *Client {
 		panic("hostname is required")
 	}
 
+	if config.Timeout <= 0 {
+		config.Timeout = defaultTimeout
+		zap.L().Debug(fmt.Sprintf("Timeout is %s (default)", config.Timeout.String()))
+	} else {
+		zap.L().Debug(fmt.Sprintf("Timeout is %s (config)", config.Timeout.String()))
+	}
+
 	return &Client{
-		username: config.Username,
-		password: config.Password,
-		hostname: config.Hostname,
-		httpClient: &http.Client{Transport: &http.Transport{
-			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-		}},
+		config: config,
+		httpClient: &http.Client{
+			Timeout: time.Second * 5,
+			Transport: &http.Transport{
+				TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+			}},
 	}
 }
 
 func (t *Client) GetAuthCookie() (*http.Cookie, error) {
 
 	authRequest := &AuthRequest{
-		Username: t.username,
-		Password: t.password,
+		Username: t.config.Username,
+		Password: t.config.Password,
 	}
 
 	authRequestRaw, _ := json.Marshal(authRequest)
 
-	req, err := http.NewRequest("POST", t.hostname+"/api/auth/login", bytes.NewBuffer(authRequestRaw))
+	req, err := http.NewRequest("POST", t.config.Hostname+"/api/auth/login", bytes.NewBuffer(authRequestRaw))
 
 	if err != nil {
 		return nil, err
@@ -166,7 +174,7 @@ func (t *Client) httpRequest(op, uri string) ([]byte, error) {
 			zap.L().Debug("cookie does exist")
 		}
 
-		req, err := http.NewRequest(op, t.hostname+uri, nil)
+		req, err := http.NewRequest(op, t.config.Hostname+uri, nil)
 		if err != nil {
 			return nil, err
 		}

@@ -1,10 +1,24 @@
 package unifi
 
+import (
+	"time"
+
+	"github.com/jinzhu/copier"
+)
+
 type Config struct {
-	Enabled  bool   `json:"enabled,omitempty" yaml:"enabled,omitempty"`
-	Username string `json:"username,omitempty" yaml:"username,omitempty"`
-	Password string `json:"password,omitempty" yaml:"password,omitempty"`
-	Hostname string `json:"hostname,omitempty" yaml:"hostname,omitempty"`
+	Enabled  bool          `json:"enabled,omitempty" yaml:"enabled,omitempty"`
+	Username string        `json:"username,omitempty" yaml:"username,omitempty"`
+	Password string        `json:"password,omitempty" yaml:"password,omitempty"`
+	Hostname string        `json:"hostname,omitempty" yaml:"hostname,omitempty"`
+	Timeout  time.Duration `json:"timeout,omitempty" yaml:"timeout,omitempty"`
+}
+
+// Clone return copy
+func (t *Config) Clone() *Config {
+	c := &Config{}
+	copier.Copy(&c, &t)
+	return c
 }
 
 func ExampleConfig() *Config {
